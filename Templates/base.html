@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+    <head>
+        <title>{{page_title}}</title>
+
+        
+    </head>
+<body>
+    <a href="{{ url_for('index') }}"> Home </a>
+    <a href="{{ url_for('blog_entry') }}"> New Post </a>
+    <a href="{{ url_for('newpost') }}"> All Posts </a>
+    <a href="{{ url_for('login') }}"> Log In</a>
+    <a href="{{ url_for ('logout') }}">Log Out</a>
+   
+   
+
+
+    <h1>{{page_title}}</h1>
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

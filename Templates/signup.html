@@ -1,0 +1,17 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Register</h1>
+    <p>If you already have an account, <a href=/login>you may sign in here.</a></p>
+    <form action="/signup" method="post">
+        <p><label for "username">Username</label>
+        <input id="username" name="username" type="text" value="{{username}}"></p>
+        <p><label for "password">Password</label>
+        <input id="password" name="password" type="password"></p>
+        <p><label for "verify">Verify Password</label>
+        <input id="verify" name="verify" type="password"></p>
+        <input type="submit" value="Register">
+    </form>
+
+{% endblock %}
