@@ -37,6 +37,19 @@ def index():
     blogs = Blog.query.all()
     return render_template('blog.html', page_title ="Build a Blog", blogs=blogs)
 
+@app.route('/login', methods=['POST, GET'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password'] 
+        user = User.query.filter_by('username=username').first()
+        if user and user.password == password:
+            flash("Logged in")
+            return redirect('/)
+        else:
+            flash ('User password incorrect, or user does not exist' )
+
+    return render_template('login.html')
 
 
 
