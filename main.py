@@ -31,31 +31,43 @@ class User(db.Model):
 
 
 
+@app.before_request
+def require_login():
+    allowed_routes = ['login', 'register']
+    if request.endpoint not in allowed_routes and 'username' not in session:
+        return redirect('/login')
+
 @app.route('/', methods=['Post', 'GET'])
 def index():
 
     blogs = Blog.query.all()
     return render_template('blog.html', page_title ="Build a Blog", blogs=blogs)
 
+
+#worked on this, need redirect signup if no accnt
 @app.route('/login', methods=['POST, GET'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password'] 
         user = User.query.filter_by('username=username').first()
-        if user and user.password == password:
+        if user and user.name == name:
             flash("Logged in")
-            return redirect('/)
+            return redirect('/newpost')
         else:
-            flash ('User password incorrect, or user does not exist' )
+            flash ('User name incorrect, or user does not exist' )
 
-    return render_template('login.html')
+        return render_template('login.html')
+
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
 
 
 
-@app.route('/entry', methods=['POST', 'GET'])
-def blog_entry():
-    return render_template('entry.html', page_title="Build a Blog")
+
+    @app.route('/entry', methods=['POST', 'GET'])
+    def blog_entry():
+        return render_template('entry.html', page_title="Blogz")
 
 
 
