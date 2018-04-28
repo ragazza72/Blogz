@@ -30,8 +30,6 @@ class User(db.Model):
        blogs = db.relationship('Blog', backref='owner')
 
 
-
-
 @app.before_request
 def require_login():
     allowed_routes = ['login', 'signup']
@@ -64,7 +62,7 @@ def login():
             return redirect('/')
         else:
             flash ('User name incorrect, or user does not exist' )
-            return '<h1>Error!</h1>'    
+               
 
     return render_template('login.html')
 
