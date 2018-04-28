@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, session, url_for
+from flask import Flask, request, redirect, render_template, session, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 
 
@@ -37,12 +37,18 @@ def require_login():
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/login')
 
-@app.route('/', methods=['Post', 'GET'])
+@app.route('/', methods=['Post', 'GET']) #original route
 def index():
 
     blogs = Blog.query.all()
-    return render_template('blog.html', page_title ="Build a Blog", blogs=blogs)
+    return render_template('blog.html', page_title ="Blogz", blogs=blogs)
 
+@app.route('/newpost', methods=['GET']) #original route
+def newpost():
+
+    blog_id = request.args.get('id')
+    blog = Blog.query.get(blog_id)
+    return render_template('newpost.html', page_title=blog.title, entry=blog.body)
 
 #worked on this, need redirect signup if no accnt
 @app.route('/login', methods=['POST, GET'])
@@ -53,7 +59,7 @@ def login():
         user = User.query.filter_by('username=username').first()
         if user and user.name == name:
             flash("Logged in")
-            return redirect('/newpost')
+            return redirect('/')
         else:
             flash ('User name incorrect, or user does not exist' )
 
@@ -79,7 +85,7 @@ def all_posts():
     blog = Blog.query.get(blog_id)
     return render_template('all_posts.html', page_title=blog.title, entry=blog.body)
 
-@app.route('/enter-data', methods=['GET', 'POST'])
+@app.route('/enter-data', methods=['GET', 'POST']) #original route
 def data_entry():
 
     if request.method == 'POST': 
@@ -94,7 +100,7 @@ def data_entry():
         db.session.add(fresh_blog)
         db.session.commit()
         
-    blogs = Blog.query.all()
+    blogs = Blog.query.all() #end of original route
     return render_template('all_posts.html', entry=entry, page_title=title)    
 
 if __name__ == '__main__':
