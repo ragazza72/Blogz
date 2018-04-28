@@ -58,6 +58,7 @@ def login():
         password = request.form['password'] 
         user = User.query.filter_by('username=username').first()
         if user and user.name == name:
+            session['username'] = username
             flash("Logged in")
             return redirect('/')
         else:
@@ -67,13 +68,43 @@ def login():
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        verify = request.form['verify']
+
+        def is_input_not_valid(input): #original code
+            if input == "" or len(input) < 3 or len(input) > 20 or " " in input:
+                return True
+        return False
+
+def not_matching_passwords(password1, password2):
+    if not password1 == password2:
+        return True
+    return False
+
+def email_not_valid(email):
+    if not email == '':
+        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email) or len(email) < 3 or len(email) > 20:
+            return True 
+        return False #end original code
+
+    existing_user = User.query.filter_by(username=username.first())
+    if not existing_user:
+        new_user = User(password)
+        db.session.add(new_user)
+        db.session.commit()
+        session['username'] = username
+        return redirect('/')
+    else:
+        return "<h1> Duplicate User </h1>"
+
+    return render_template('register.html')
 
 
-
-
-    @app.route('/entry', methods=['POST', 'GET'])
-    def blog_entry():
-        return render_template('entry.html', page_title="Blogz")
+@app.route('/entry', methods=['POST', 'GET'])
+def blog_entry():
+    return render_template('entry.html', page_title="Blogz")
 
 
 
@@ -102,6 +133,11 @@ def data_entry():
         
     blogs = Blog.query.all() #end of original route
     return render_template('all_posts.html', entry=entry, page_title=title)    
+
+@app.route('/logout')
+def logout():
+    del session['username']
+    return redirect('/')
 
 if __name__ == '__main__':
     app.run()
