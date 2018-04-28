@@ -64,8 +64,9 @@ def login():
             return redirect('/')
         else:
             flash ('User name incorrect, or user does not exist' )
+            return '<h1>Error!</h1>'    
 
-        return render_template('login.html')
+    return render_template('login.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
