@@ -8,6 +8,7 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:buildtheblogz@localhost:8889/blogz'
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
+app.secret_key = 'shhhhitsasecret'
 
 class Blog(db.Model):
 
@@ -33,7 +34,7 @@ class User(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'register']
+    allowed_routes = ['login', 'signup']
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/login')
 
@@ -51,7 +52,7 @@ def newpost():
     return render_template('newpost.html', page_title=blog.title, entry=blog.body)
 
 #worked on this, need redirect signup if no accnt
-@app.route('/login', methods=['POST, GET'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -76,7 +77,7 @@ def signup():
         def is_input_not_valid(input): #original code
             if input == "" or len(input) < 3 or len(input) > 20 or " " in input:
                 return True
-        return False
+    return False
 
 def not_matching_passwords(password1, password2):
     if not password1 == password2:
