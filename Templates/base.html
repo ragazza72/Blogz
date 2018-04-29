@@ -7,10 +7,12 @@
     </head>
 <body>
     <a href="{{ url_for('index') }}"> Home </a>
-    <a href="{{ url_for('blog_entry') }}"> New Post </a>
+    <a href="{{ url_for('blog') }}"> New Post </a>
     <a href="{{ url_for('login') }}" > Login </a> 
     <a href="{{ url_for('logout') }}" > Log out </a>
-   
+    <a href="{{ url_for('signup') }}"> Signup </a>
+    <a href="{{ url_for('newpost' )}}"> New Post </a>
+
    
     {% with messages = get_flashed_messages() %}
         <ul>

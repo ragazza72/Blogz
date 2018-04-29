@@ -1,21 +1,10 @@
 {% extends "base.html" %}
+<head></head>
 
 {% block content %}
-    <form method='post' action='enter-data'>
-        <label>
-            <input type="text" name='title' value='{{title}}'/>
-            {% if title == '' %}
-            <span class='error'>Title goes here</span>
-            {% endif %}
-        </label>
-        <br>
-        <textarea type='text' name='entry'>{{entry}}</textarea><br>
-        {% if entry == '' %}
-        <span class='error'>Please make an entry</span>
-        {% endif %}
-        <br>
-        <input type="submit" value='Add Entry' class="button"/>
-    </form>
 
-
+    <header><h1>{{blog.title}}</h1></header>
+    <hr />
+    <p><h5>{{blog.body}}</h5></p>
+    <p>Written By: <a href= '/singleuser?id={{blog.owner_id}}'>{{blog.owner.username}}</a></p>
 {% endblock %}
