@@ -50,13 +50,16 @@ def newpost():
     blog = Blog.query.get(blog_id)
     return render_template('newpost.html', page_title=blog.title, entry=blog.body)
 
-#worked on this, need redirect signup if no accnt
+
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    if session.get('username') is not None:
+        flash("You are already logged in. Please sign out.")
+        return redirect('/blog')
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password'] 
-        user = User.query.filter_by('username=username').first()
+        user = User.query.filter_by(username=username).first()
         if user and user.name == name:
             session['username'] = username
             flash("Logged in")
@@ -64,8 +67,9 @@ def login():
         else:
             flash ('User name incorrect, or user does not exist' )
                
-
     return render_template('login.html')
+
+
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -73,34 +77,39 @@ def signup():
         username = request.form['username']
         password = request.form['password']
         verify = request.form['verify']
+        existing_user = User.query.filter_by(username=username).first()
 
-        def is_input_not_valid(input): #original code
-            if input == "" or len(input) < 3 or len(input) > 20 or " " in input:
-                return True
-    return False
-
-def not_matching_passwords(password1, password2):
-    if not password1 == password2:
-        return True
-    return False
-
-def email_not_valid(email):
-    if not email == '':
-        if not re.match(r"^[A-Za-z0-9\.\+_-]+@[A-Za-z0-9\._-]+\.[a-zA-Z]*$", email) or len(email) < 3 or len(email) > 20:
-            return True 
-        return False #end original code
-
-    existing_user = User.query.filter_by(username=username.first())
-    if not existing_user:
-        new_user = User(password)
-        db.session.add(new_user)
-        db.session.commit()
-        session['username'] = username
+        if existing_user:
+            flash("Existing User")
+            print(session)
+            return redirect('/signup')
+       
+        if not username or not password or not verify:
+            flash("All fields need filled in.")
+            print(session)
+            return redirect('/signup')
+        
+        if password != verify:
+            flash("Your passwords do not match")
+            print(session)
+            return redirect('/signup')      
+        
+        if len(password)<3 or len(username)<3:
+            flash("Put a little more effort in and make sure your username and password are both over three characters long", 'error')
+            print(session)
+            return redirect('/signup')   
+        
+        if not existing_user:
+            new_user = User(password)
+            db.session.add(new_user)
+            db.session.commit()
+            session['username'] = username
         return redirect('/')
-    else:
-        return "<h1> Duplicate User </h1>"
+        
+    #else:
+        #return "<h1> Duplicate User </h1>"
 
-    return render_template('register.html')
+    return render_template('signup.html')
 
 
 @app.route('/entry', methods=['POST', 'GET'])
