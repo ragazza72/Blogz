@@ -39,19 +39,19 @@ class User(db.Model):
 def require_login():
     allowed_routes = ['login', 'signup', 'blog']
     if request.endpoint not in allowed_routes and 'username' not in session:
-        return redirect('/login')
+        return redirect('/')
 
 @app.route('/', methods=['GET']) 
 def index():
     users = User.query.all()
     return render_template('index.html', page_title ="Blogz", users=users)
-
+    
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    #if session.get('username') is not None:
-        #flash("You are already logged in. Please sign out.")
-        #return redirect('/blog')
+    if session.get('username') is not None:
+        flash("You are already logged in. Please sign out.")
+        return redirect('/blog')
     
     if request.method == 'POST':
         username = request.form['username']
@@ -113,11 +113,10 @@ def signup():
 
 @app.route('/blog', methods=['GET'])
 def blog():
-    def blog():
-        if request.args.get('id'):
-            blog_id = int(request.args.get('id'))
-            single_id = Blog.query.get(blog_id)
-        return render_template('entry.html', blog=single_id)
+    if request.args.get('id'):
+        blog_id = int(request.args.get('id'))
+        single_id = Blog.query.get(blog_id)
+        return render_template('entry.html', entry=blog.body, blog=single_id)
 
     blogs = Blog.query.all()
     return render_template('blog.html', blogs=blogs)
@@ -130,14 +129,14 @@ def singleuser():
         user = User.query.filter_by(id=user_id).first()
         blogs = Blog.query.filter_by(owner_id=user_id)
 
-    return render_template('singleUser.html', blogs=blogs, user=user)   
+        return render_template('singleUser.html', blogs=blogs, user=user)   
 
 @app.route('/newpost', methods=['GET', 'POST']) 
 def newpost():
 
     if request.method == 'POST': 
-        title = request.form['title']
-        body = request.form['body']
+        title = request.form['blog_title']
+        body = request.form['blog_body']
         owner = User.query.filter_by(username=session['username']).first()
 
         if body and title:
