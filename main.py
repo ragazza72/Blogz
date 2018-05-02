@@ -113,13 +113,16 @@ def signup():
 
 @app.route('/blog', methods=['GET'])
 def blog():
-    if request.args.get('id'):
-        blog_id = int(request.args.get('id'))
-        single_id = Blog.query.get(blog_id)
-        return render_template('entry.html', entry=blog.body, blog=single_id)
+    
+    blog_id = request.args.get('id')
+    single_id = Blog.query.get(blog_id)
+    return render_template('entry.html', entry=blog.body, blog=single_id)
 
-    blogs = Blog.query.all()
+    
     return render_template('blog.html', blogs=blogs)
+       blogs = Blog.query.all()
+   
+    
 
 
 @app.route('/singleuser')
@@ -145,7 +148,8 @@ def newpost():
             db.session.commit()
             return redirect ('/blog?id='+str(new_post.id))
 
-        if not body or not title:
+        if request.method == 'GET':
+            title == '' or body == ''
             flash("Please fill out all fields.")
     return render_template('newpost.html')
         
