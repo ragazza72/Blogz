@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 
-
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://blogz:buildtheblogz@localhost:8889/blogz'
@@ -20,8 +19,8 @@ class Blog(db.Model):
 
     def __init__(self, title, owner, body):
         self.title = title
-        self.body = body
         self.owner = owner
+        self.body = body
 
 class User(db.Model):
 
@@ -37,7 +36,7 @@ class User(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['login', 'signup', 'blog']
+    allowed_routes = ['index', 'login', 'signup']
     if request.endpoint not in allowed_routes and 'username' not in session:
         return redirect('/')
 
@@ -111,16 +110,15 @@ def signup():
 
 
 
-@app.route('/blog', methods=['GET'])
+@app.route('/blog', methods=['GET', 'POST'])
 def blog():
-    
     blog_id = request.args.get('id')
-    single_id = Blog.query.get(blog_id)
-    return render_template('entry.html', entry=blog.body, blog=single_id)
+    blogs = Blog.query.all()
 
-    
-    return render_template('blog.html', blogs=blogs)
-       blogs = Blog.query.all()
+    return render_template('blog.html', blog=blog)
+
+
+   
    
     
 
@@ -143,10 +141,10 @@ def newpost():
         owner = User.query.filter_by(username=session['username']).first()
 
         if body and title:
-            new_post = Blog(title,body,owner)
+            new_post = Blog(title, body, owner)
             db.session.add(new_post)
             db.session.commit()
-            return redirect ('/blog?id='+str(new_post.id))
+            return redirect('/blog?id='+str(new_post.id))
 
         if request.method == 'GET':
             title == '' or body == ''
