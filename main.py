@@ -58,7 +58,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.password == password:
-            session['username'] = username
+            session['user'] = user
             flash("Logged in")
             return redirect('/newpost')
         else:
@@ -115,7 +115,7 @@ def blog():
     blog_id = request.args.get('id')
     blogs = Blog.query.all()
 
-    return render_template('blog.html', blog=blog)
+    return render_template('blog.html', blogs=blogs)
 
 
    
@@ -138,17 +138,15 @@ def newpost():
     if request.method == 'POST': 
         title = request.form['blog_title']
         body = request.form['blog_body']
-        owner = User.query.filter_by(username=session['username']).first()
+        
 
         if body and title:
-            new_post = Blog(title, body, owner)
+            new_post = Blog(title, body, session['user'].id)
             db.session.add(new_post)
             db.session.commit()
-            return redirect('/blog?id='+str(new_post.id))
+            return redirect('/blog?id='+new_post.id)
 
-        if request.method == 'GET':
-            title == '' or body == ''
-            flash("Please fill out all fields.")
+        
     return render_template('newpost.html')
         
         
