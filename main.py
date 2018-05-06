@@ -130,7 +130,7 @@ def singleuser():
         user = User.query.filter_by(id=user_id).first()
         blogs = Blog.query.filter_by(owner_id=user_id)
 
-        return render_template('singleUser.html', blogs=blogs, user=user)  #update user=user 
+        return render_template('singleUser.html', blogs=blogs, user=user)  
 
 @app.route('/newpost', methods=['GET', 'POST']) 
 def newpost():
@@ -141,7 +141,8 @@ def newpost():
         
 
         if body and title:
-            new_post = Blog(title, body, session['user_id'])  #updated
+            user_id=request.args.get('id')
+            new_post = Blog(title, body, user_id)  #
             db.session.add(new_post)
             db.session.commit()
             return redirect('/blog?id='+new_post.id)
