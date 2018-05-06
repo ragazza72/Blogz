@@ -58,7 +58,7 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.password == password:
-            session['user'] = user
+            session['user_id'] = user.id    #updated user = user
             flash("Logged in")
             return redirect('/newpost')
         else:
@@ -130,7 +130,7 @@ def singleuser():
         user = User.query.filter_by(id=user_id).first()
         blogs = Blog.query.filter_by(owner_id=user_id)
 
-        return render_template('singleUser.html', blogs=blogs, user=user)   
+        return render_template('singleUser.html', blogs=blogs, user=user)  #update user=user 
 
 @app.route('/newpost', methods=['GET', 'POST']) 
 def newpost():
@@ -141,7 +141,7 @@ def newpost():
         
 
         if body and title:
-            new_post = Blog(title, body, session['user'].id)
+            new_post = Blog(title, body, session['user_id'])  #updated
             db.session.add(new_post)
             db.session.commit()
             return redirect('/blog?id='+new_post.id)
