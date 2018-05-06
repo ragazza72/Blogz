@@ -17,10 +17,10 @@ class Blog(db.Model):
     body = db.Column(db.Text(900))
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    def __init__(self, title, owner, body):
+    def __init__(self, title, body, owner):
         self.title = title
-        self.owner = owner
         self.body = body
+        self.owner = owner
 
 class User(db.Model):
 
@@ -36,9 +36,9 @@ class User(db.Model):
 
 @app.before_request
 def require_login():
-    allowed_routes = ['index', 'login', 'signup']
+    allowed_routes = ['index', 'login', 'signup', 'blog']
     if request.endpoint not in allowed_routes and 'username' not in session:
-        return redirect('/')
+        return redirect('/login')
 
 @app.route('/', methods=['GET']) 
 def index():
@@ -58,9 +58,9 @@ def login():
         user = User.query.filter_by(username=username).first()
         
         if user and user.password == password:
-            session['user_id'] = user.id    #updated user = user
+            session['user_id'] = user.id   
             flash("Logged in")
-            return redirect('/newpost')
+            return render_template('newpost.html')
         else:
             flash ('User name incorrect, or user does not exist' )
                
@@ -130,22 +130,24 @@ def singleuser():
         user = User.query.filter_by(id=user_id).first()
         blogs = Blog.query.filter_by(owner_id=user_id)
 
-        return render_template('singleUser.html', blogs=blogs, user=user)  
+        return render_template('singleUser.html', blogs=blogs, user=user) #update
 
 @app.route('/newpost', methods=['GET', 'POST']) 
 def newpost():
+    #if 'user' not in session: 
+        #return render_template('login.html')
 
     if request.method == 'POST': 
         title = request.form['blog_title']
         body = request.form['blog_body']
-        
+        owner = User.query.filter_by(username=session['username']).first()
 
         if body and title:
-            user_id=request.args.get('id')
-            new_post = Blog(title, body, user_id)  #
+            
+            new_post = Blog(title, body, owner)  
             db.session.add(new_post)
             db.session.commit()
-            return redirect('/blog?id='+new_post.id)
+            return redirect('/blog?id='+str(new_post.id))
 
         
     return render_template('newpost.html')
